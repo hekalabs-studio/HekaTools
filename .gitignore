@@ -1,0 +1,12 @@
+node_modules/
+session/
+tmp/
+
+# Cookies (data/cookies.txt) berisi sesi LOGIN akun asli (Instagram/TikTok/dst) yang dipakai
+# buat ngakalin error "No video formats found"/"login required" -- JANGAN sampai ke-commit atau
+# ke-share ke siapapun, siapapun yang pegang file ini bisa login sebagai akun kamu.
+data/cookies.txt
+data/cookies-*.txt
+
+.env
+*.log

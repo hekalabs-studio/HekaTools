@@ -1,0 +1,4 @@
+# Pastikan semua script shell (.sh) selalu menggunakan LF (Linux line endings)
+*.sh text eol=lf
+*.py text eol=lf
+*.service text eol=lf

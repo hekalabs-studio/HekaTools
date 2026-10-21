@@ -1,0 +1,55 @@
+# hekabot.service : jalankan HekaTools sebagai service Linux (systemd)
+#
+# INI YANG BIKIN SERVER "FULL DI LINUX": jalan terus di background sebagai daemon,
+# auto-restart kalau crash, auto-start lagi kalau server reboot. Gak perlu buka
+# terminal / SSH terus-menerus kayak di Windows (di mana biasanya orang harus
+# biarin jendela cmd/PowerShell tetap terbuka).
+#
+# CARA PASANG:
+#   1. Edit dulu 2 baris di bawah ini sesuai server kamu:
+#        - User=            -> ganti dengan username Linux kamu (cek: whoami)
+#        - WorkingDirectory= -> ganti dengan path folder hekabot yang sebenarnya
+#      (cek path lengkap dengan: pwd, dijalankan di dalam folder hekabot)
+#
+#   2. Copy file ini ke systemd:
+#        sudo cp scripts/hekabot.service /etc/systemd/system/hekabot.service
+#
+#   3. Reload systemd & aktifkan:
+#        sudo systemctl daemon-reload
+#        sudo systemctl enable hekabot      # auto-start saat boot
+#        sudo systemctl start hekabot       # jalankan sekarang
+#
+#   4. PENTING - scan QR/pairing pertama kali:
+#      Karena service jalan di background, log (termasuk QR code / pairing code)
+#      dilihat lewat:
+#        sudo journalctl -u hekabot -f
+#      Setelah berhasil pairing sekali, folder session/ tersimpan otomatis dan
+#      kamu tidak perlu scan ulang tiap kali service restart/reboot.
+#
+#   PERINTAH BERGUNA LAINNYA:
+#     sudo systemctl status hekabot      # cek status jalan/tidak
+#     sudo systemctl restart hekabot     # restart manual
+#     sudo systemctl stop hekabot        # matikan
+#     sudo journalctl -u hekabot -f      # lihat log realtime
+# ==============================================================================
+
+[Unit]
+Description=HekaTools - Web Application & Multi-Tools Engine
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ganti-username-kamu
+WorkingDirectory=/home/ganti-username-kamu/hekabot
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+# Batasi memory biar gak makan semua RAM VPS kalau ada fitur yang bocor memory
+MemoryMax=1500M
+# Log otomatis masuk ke journalctl, gak perlu redirect manual
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

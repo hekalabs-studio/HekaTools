@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HekaTools - Portal Serbaguna & Media Studio</title>
+  
+  <!-- Font Poppins & Inter (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- KaTeX Engine untuk Render Rumus Matematika & Fisika LaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+
+  <!-- =========================================================================
+       Header & Navbar (Satu Baris Bersih & Rapih untuk Setiap Mode)
+       ========================================================================= -->
+  <header class="site-header">
+    <!-- Navbar 1: Mode Katalog Alat & Studio -->
+    <div class="container header-inner" id="toolsHeaderInner">
+      <div class="brand">
+        <span>⚡ HEKA TOOLS</span>
+        <span class="brand-badge">WEB V1.0</span>
+      </div>
+
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Cari alat (contoh: brat, tiktok, pdf, ocr)..." autocomplete="off">
+      </div>
+
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Ganti Mode Gelap/Terang" title="Mode Gelap / Terang">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navbar 2: Mode AI Google (Satu Baris Rapi, Tanpa Bertumpuk) -->
+    <div class="container header-inner" id="aiHeaderInner" style="display: none;">
+      <div class="ai-header-left">
+        <button id="btnBackToTools" class="btn-back-tools" title="Kembali ke Katalog Alat">
+          <span class="btn-back-arrow">←</span>
+          <span class="btn-back-text">Alat</span>
+        </button>
+        <div class="ai-header-title">
+          <span class="google-sparkle-icon">✨</span>
+          <span class="ai-title-text">Mode AI Google</span>
+          <span class="serba-tahu-chip">Serba Tahu</span>
+        </div>
+      </div>
+
+      <div class="ai-header-right">
+        <div class="export-dropdown-wrapper" style="position: relative;">
+          <button id="btnExportChatToggle" class="btn-clear-chat" title="Ekspor Catatan Obrolan" aria-label="Ekspor Percakapan">
+            <span>📥</span>
+            <span class="btn-clear-label">Ekspor</span>
+          </button>
+          <div id="exportChatDropdown" class="export-chat-dropdown" style="display: none;">
+            <button type="button" class="export-option-btn" data-export-type="pdf">
+              <span>📄</span> Cetak / Simpan PDF
+            </button>
+            <button type="button" class="export-option-btn" data-export-type="markdown">
+              <span>📝</span> Unduh Markdown (.md)
+            </button>
+            <button type="button" class="export-option-btn" data-export-type="txt">
+              <span>📃</span> Unduh Teks (.txt)
+            </button>
+          </div>
+        </div>
+        <button id="btnClearAiChat" class="btn-clear-chat" title="Bersihkan Obrolan" aria-label="Bersihkan Obrolan">
+          <span>🗑️</span>
+          <span class="btn-clear-label">Hapus</span>
+        </button>
+        <button id="themeToggleBtnAi" class="theme-toggle-btn" aria-label="Ganti Mode Gelap/Terang" title="Mode Gelap / Terang">
+          <span id="themeIconAi">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       Main Content (Dual-View: Tools Studio & Mode AI Google)
+       ========================================================================= -->
+  <main>
+    <!-- View 1: Katalog Alat & Studio -->
+    <div id="toolsViewContainer" class="main-view active-view">
+      <section class="hero-section">
+        <div class="container">
+          <h1 class="hero-title">Semua Alat Digital dalam <span>Satu Tempat</span></h1>
+          <p class="hero-desc">Unduh video, ubah dokumen, buat stiker brat, tanya AI, hingga scan OCR gambar dengan tampilan flat solid yang bersih dan cepat.</p>
+
+          <!-- Quick Action Bar -->
+          <div class="quick-bar-wrapper">
+            <input type="text" id="quickUrlInput" class="quick-bar-input" placeholder="Tempel tautan TikTok / YouTube / Instagram di sini...">
+            <button id="quickProcessBtn" class="quick-bar-btn">Proses Cepat</button>
+          </div>
+
+          <!-- Hero Mode Switcher (Di Bawah Kolom Proses Cepat) -->
+          <div class="hero-mode-switcher-wrapper">
+            <div class="hero-mode-switcher" id="mainModeSwitcher" role="tablist" aria-label="Pilih Mode Fitur">
+              <button class="hero-mode-tab active" id="tabBtnTools" role="tab" aria-selected="true" data-mode="tools">
+                <span class="hero-tab-icon">🛠️</span>
+                <span class="hero-tab-text">Alat & Studio</span>
+              </button>
+              <button class="hero-mode-tab" id="tabBtnAi" role="tab" aria-selected="false" data-mode="ai">
+                <span class="hero-tab-icon">✨</span>
+                <span class="hero-tab-text">Mode AI Google</span>
+                <span class="hero-tab-badge">Serba Tahu</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Pills Kategori (Seksi Suite Terpadu) -->
+          <div class="category-pills-wrapper">
+            <div class="category-pills" role="tablist" aria-label="Filter Seksi Alat">
+              <button class="pill-btn active" data-category="all" role="tab" aria-selected="true">
+                <span class="pill-icon">⚡</span>
+                <span class="pill-text">Semua Alat</span>
+                <span class="pill-count">21</span>
+              </button>
+              <button class="pill-btn" data-category="media-suite" role="tab" aria-selected="false">
+                <span class="pill-icon">📥</span>
+                <span class="pill-text">Media & Downloader</span>
+                <span class="pill-count">4</span>
+              </button>
+              <button class="pill-btn" data-category="ai-suite" role="tab" aria-selected="false">
+                <span class="pill-icon">✨</span>
+                <span class="pill-text">AI & Creative</span>
+                <span class="pill-count">8</span>
+              </button>
+              <button class="pill-btn" data-category="utilities-suite" role="tab" aria-selected="false">
+                <span class="pill-icon">🛠️</span>
+                <span class="pill-text">Utilitas & Edukasi</span>
+                <span class="pill-count">9</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tools Section (3 Seksi Suite Bertingkat) -->
+      <section class="tools-section">
+        <div class="container" id="toolsContainer">
+          <!-- 3 Seksi Suite & Kartu Alat di-render dinamis lewat app.js -->
+        </div>
+      </section>
+      <!-- Footer Khusus Katalog Alat & Studio -->
+      <footer id="siteFooter" class="site-footer">
+        <div class="container footer-inner">
+          <div>
+            <strong>HekaTools</strong> &copy; 2026 Novemas Heka Alfarizi. Ditenagai oleh HekaBot engine.
+          </div>
+          <div class="footer-links">
+            <a href="https://hekaportfolio.web.app" target="_blank" rel="noopener">Portfolio</a>
+            <a href="https://www.instagram.com/novemash3kaa" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://hekaapedia.web.app" target="_blank" rel="noopener">HekaStore</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- View 2: Mode AI Google (Serba Tahu) -->
+    <div id="googleAiViewContainer" class="main-view google-ai-view-container" style="display: none;">
+      <!-- Chat Messages Scroll Viewport -->
+      <div class="google-ai-chat-viewport" id="googleAiChatViewport">
+        <div class="google-ai-chat-inner" id="googleAiChatInner">
+
+          <!-- Welcome Box saat belum ada chat -->
+          <div id="googleAiWelcome" class="google-ai-welcome-box">
+            <div class="google-sparkle-hero">✨</div>
+            <h2 class="welcome-title">Mode AI Google <span class="highlight-chip">Serba Tahu</span></h2>
+            <p class="welcome-desc">Asisten pintar yang siap menjawab segala topik mulai dari riset sains, coding, rangkuman materi, hingga strategi kreatif.</p>
+
+            <!-- Quick Prompts Grid -->
+            <div class="quick-prompts-grid">
+              <button class="quick-prompt-card" data-prompt="Jelaskan bagaimana model bahasa besar (LLM) bekerja secara sederhana untuk pemula">
+                <span class="quick-card-icon">🔬</span>
+                <div class="quick-card-info">
+                  <strong>Sains & Teknologi</strong>
+                  <span>Cara kerja LLM & Generative AI secara sederhana</span>
+                </div>
+              </button>
+              <button class="quick-prompt-card" data-prompt="Tuliskan contoh kode JavaScript async/await fetch dengan validasi JSON dan error handling rapi">
+                <span class="quick-card-icon">💻</span>
+                <div class="quick-card-info">
+                  <strong>Koding & Debugging</strong>
+                  <span>Fetch data API JavaScript dengan try/catch & timeout</span>
+                </div>
+              </button>
+              <button class="quick-prompt-card" data-prompt="Buatkan 5 ide judul konten video edukasi teknologi yang memancing rasa penasaran">
+                <span class="quick-card-icon">💡</span>
+                <div class="quick-card-info">
+                  <strong>Ide Konten Kreatif</strong>
+                  <span>5 ide konten video edukasi teknologi yang viral</span>
+                </div>
+              </button>
+              <button class="quick-prompt-card" data-prompt="Rangkumkan perbedaan utama antara SQL vs NoSQL dalam tabel perbandingan ringkas">
+                <span class="quick-card-icon">📝</span>
+                <div class="quick-card-info">
+                  <strong>Rangkuman & Perbandingan</strong>
+                  <span>Tabel komparasi SQL vs NoSQL database</span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Minimalist Attribution Footer di Welcome Screen (Tidak Mengganggu Layar Chat) -->
+            <div class="welcome-footer-mini">
+              <span>HekaTools &copy; 2026 Novemas Heka Alfarizi &bull; Ditenagai HekaBot</span>
+              <div class="welcome-mini-links">
+                <a href="https://hekaportfolio.web.app" target="_blank" rel="noopener">Portfolio</a>
+                <a href="https://www.instagram.com/novemash3kaa" target="_blank" rel="noopener">Instagram</a>
+                <a href="https://hekaapedia.web.app" target="_blank" rel="noopener">HekaStore</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daftar Pesan Chat Bubble -->
+          <div id="googleAiMessagesList" class="google-ai-messages-list"></div>
+
+        </div>
+      </div>
+
+      <!-- Floating Input Dock (Layout Modern Dua Baris ala Google Gemini) -->
+      <div class="google-ai-input-dock-wrapper">
+        <div class="google-ai-input-dock">
+          <!-- Attachment Preview Bar (Muncul saat user memilih foto/dokumen untuk di-solve AI) -->
+          <div id="aiAttachmentPreview" class="ai-attachment-preview" style="display: none;">
+            <div class="attachment-thumb-wrap">
+              <img id="attachmentThumbImg" class="attachment-thumb-img" src="" alt="Lampiran" style="display: none;">
+              <span id="attachmentThumbIcon" class="attachment-thumb-icon" style="display: none;">📄</span>
+            </div>
+            <div class="attachment-info">
+              <span id="attachmentName" class="attachment-name">foto-soal.jpg</span>
+              <span id="attachmentSize" class="attachment-size">1.2 MB &bull; Siap di-solve AI</span>
+            </div>
+            <button type="button" id="btnRemoveAttachment" class="btn-remove-attachment" title="Hapus lampiran" aria-label="Hapus lampiran">
+              &times;
+            </button>
+          </div>
+
+          <!-- Baris 1: Textarea Input -->
+          <div class="dock-input-row">
+            <textarea id="googleAiInput" class="google-ai-textarea" rows="1" placeholder="Tanyakan apa saja..."></textarea>
+          </div>
+
+          <!-- Baris 2: Toolbar Kontrol (Plus di kiri, Model Pill + Mic + Send di kanan) -->
+          <div class="dock-bottom-bar">
+            <!-- Sisi Kiri: Tombol Plus (+) & Menu Bantuan Cepat -->
+            <div class="dock-bar-left">
+              <div class="dock-plus-wrapper">
+                <button type="button" id="btnDockPlus" class="btn-dock-icon btn-dock-plus" title="Lampirkan Media / Aksi AI" aria-label="Menu Aksi">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+
+                <!-- Popover Menu Fitur & AI Solver HekaTools (Gaya Google Gemini) -->
+                <div id="dockPlusMenu" class="dock-plus-menu" style="display: none;">
+                  <!-- Grup 1: Unggah Media & AI Solve -->
+                  <div class="dock-menu-group">
+                    <button type="button" class="dock-menu-item" data-action="upload-image">
+                      <span class="dock-item-icon">🖼️</span>
+                      <div class="dock-item-details">
+                        <span class="dock-item-text">Unggah Foto / Soal (AI Solve)</span>
+                        <span class="dock-item-sub">Selesaikan soal, matematika, diagram</span>
+                      </div>
+                    </button>
+                    <button type="button" class="dock-menu-item" data-action="camera-image">
+                      <span class="dock-item-icon">📷</span>
+                      <div class="dock-item-details">
+                        <span class="dock-item-text">Foto Langsung dari Kamera</span>
+                        <span class="dock-item-sub">Ambil foto buku/tugas via kamera HP</span>
+                      </div>
+                    </button>
+                    <button type="button" class="dock-menu-item" data-action="upload-doc">
+                      <span class="dock-item-icon">📄</span>
+                      <div class="dock-item-details">
+                        <span class="dock-item-text">Unggah Dokumen (PDF / Teks / Doc)</span>
+                        <span class="dock-item-sub">AI baca & analisis isi dokumen</span>
+                      </div>
+                    </button>
+                  </div>
+
+                  <div class="dock-menu-divider"></div>
+
+                  <!-- Grup 2: Mode Solutif AI Khusus -->
+                  <div class="dock-menu-group">
+                    <button type="button" class="dock-menu-item" data-action="prompt" data-insert="Selesaikan dan jelaskan langkah demi langkah soal berikut ini:&#10;">
+                      <span class="dock-item-icon">🔬</span>
+                      <div class="dock-item-details">
+                        <span class="dock-item-text">Solve Soal & Ujian Pelajaran</span>
+                        <span class="dock-item-sub">Matematika, Fisika, Kimia, dll</span>
+                      </div>
+                    </button>
+                    <button type="button" class="dock-menu-item" data-action="prompt" data-insert="Periksa dan berikan solusi perbaikan untuk error / potongan kode berikut:&#10;```&#10;&#10;```">
+                      <span class="dock-item-icon">💻</span>
+                      <div class="dock-item-details">
+                        <span class="dock-item-text">Analisis Kode & Debug Error</span>
+                        <span class="dock-item-sub">Cari bug & beri solusi skrip</span>
+                      </div>
+                    </button>
+                    <button type="button" class="dock-menu-item" data-action="prompt" data-insert="Rangkumkan poin-poin terpenting dan buat kesimpulan dari materi berikut:&#10;">
+                      <span class="dock-item-icon">📝</span>
+                      <div class="dock-item-details">
+                        <span class="dock-item-text">Rangkum Teks & Dokumen</span>
+                        <span class="dock-item-sub">Ekstrak intisari secara ringkas</span>
+                      </div>
+                    </button>
+                    <button type="button" class="dock-menu-item" data-action="prompt" data-insert="Terjemahkan teks berikut ke bahasa Indonesia yang alami dan baku:&#10;">
+                      <span class="dock-item-icon">🌐</span>
+                      <div class="dock-item-details">
+                        <span class="dock-item-text">Terjemahan Teks Multi-Bahasa</span>
+                        <span class="dock-item-sub">Terjemah akurat & kontekstual</span>
+                      </div>
+                    </button>
+                    <button type="button" class="dock-menu-item" data-action="prompt" data-insert="Buatkan 5 ide konten kreatif yang viral dan menarik tentang topik:&#10;">
+                      <span class="dock-item-icon">💡</span>
+                      <div class="dock-item-details">
+                        <span class="dock-item-text">Ide Konten & Strategi Kreatif</span>
+                        <span class="dock-item-sub">Konsep video, judul, dan hook</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Hidden File Inputs -->
+                <input type="file" id="aiFileInput" accept="image/*,.pdf,.txt,.doc,.docx,.xlsx,.ppt,.pptx" style="display: none;">
+                <input type="file" id="aiCameraInput" accept="image/*" capture="environment" style="display: none;">
+              </div>
+            </div>
+
+            <!-- Sisi Kanan: Model Switcher Pill, Mic Suara, dan Tombol Kirim Panah Atas -->
+            <div class="dock-bar-right">
+              <!-- Pill Pemilih Model AI (Gemini / DeepSeek / Groq / Mistral) -->
+              <div class="dock-model-pill" title="Ganti Model AI">
+                <span class="dock-model-text" id="dockModelText">Gemini 3.1</span>
+                <svg class="dock-model-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+                <select id="googleAiModelSelectDock" class="dock-model-select-native" aria-label="Pilih Engine dan Model AI">
+                  <optgroup label="Google Gemini">
+                    <option value="gemini:gemini-3.1-flash-lite" data-short="Gemini 3.1" selected>Gemini 3.1 Flash Lite (Default)</option>
+                    <option value="gemini:gemini-3.8-flash" data-short="Gemini 3.8">Gemini 3.8 Flash (Terbaru)</option>
+                    <option value="gemini:gemini-flash-latest" data-short="Gemini Flash">Gemini Flash (Versi Teranyar)</option>
+                    <option value="gemini:gemini-pro-latest" data-short="Gemini Pro">Gemini Pro (Penalaran Kompleks)</option>
+                  </optgroup>
+                  <optgroup label="Groq (Ultra Cepat)">
+                    <option value="groq:openai/gpt-oss-120b" data-short="GPT-OSS 120B">GPT-OSS 120B (Flagship)</option>
+                    <option value="groq:qwen/qwen3.8-27b" data-short="Qwen 3.8">Qwen 3.8 27B (Math & Koding)</option>
+                    <option value="groq:openai/gpt-oss-20b" data-short="GPT-OSS 20B">GPT-OSS 20B (Super Ringan)</option>
+                    <option value="groq:allam-2-7b" data-short="Allam 2">Allam 2 7B</option>
+                  </optgroup>
+                  <optgroup label="DeepSeek AI">
+                    <option value="deepseek:deepseek-flash" data-short="DeepSeek Flash">DeepSeek Flash (Cepat & Pintar)</option>
+                    <option value="deepseek:deepseek-v4-pro" data-short="DeepSeek Pro">DeepSeek V4 Pro (Flagship)</option>
+                  </optgroup>
+                  <optgroup label="Mistral AI">
+                    <option value="mistral:mistral-small-latest" data-short="Mistral Small">Mistral Small</option>
+                    <option value="mistral:mistral-medium-latest" data-short="Mistral Medium">Mistral Medium</option>
+                    <option value="mistral:codestral-latest" data-short="Codestral">Codestral (Spesialis Koding)</option>
+                    <option value="mistral:ministral-8b-latest" data-short="Ministral 8B">Ministral 8B (Ringan)</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <!-- Tombol Dikte Suara (Mikrofon) -->
+              <button type="button" id="btnDockMic" class="btn-dock-icon btn-dock-mic" title="Dikte Suara (Mikrofon)" aria-label="Dikte Suara">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="23"></line>
+                  <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+              </button>
+
+              <!-- Tombol Kirim: Lingkaran Solid Biru dengan Panah Atas (↑) -->
+              <button type="button" id="btnSendGoogleAi" class="btn-dock-send" title="Kirim Pertanyaan" aria-label="Kirim Pertanyaan">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="19" x2="12" y2="5"></line>
+                  <polyline points="5 12 12 5 19 12"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="dock-disclaimer">AI Google dapat membuat kekeliruan. Selalu verifikasi informasi penting.</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       Interactive Modals (Dedicated 2-Column Studios for EVERY Tool)
+       ========================================================================= -->
+
+  <!-- 1. Brat Sticker Studio -->
+  <div id="bratModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🎨 Brat Sticker Studio</h2>
+        <button class="modal-close-btn" data-close="bratModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="bratTextInput">Teks Stiker Brat:</label>
+              <textarea id="bratTextInput" class="form-textarea" placeholder="Tulis kata-kata di sini (contoh: capek banget hari ini)...">365 party girl</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pilih Warna Solid:</label>
+              <div id="bratColorChips" class="color-chips"></div>
+            </div>
+            <button id="btnGenerateBrat" class="btn-solid" style="width: 100%;">
+              ⚡ Buat Stiker Sekarang
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Pratinjau Hasil (Preview):</label>
+            <div class="preview-box" id="bratPreviewBox">
+              <span id="bratPreviewPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Klik tombol "Buat Stiker" untuk melihat hasil.</span>
+              <img id="bratPreviewImg" src="" alt="Pratinjau Brat" style="display: none;">
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadBrat" class="btn-solid" href="#" download="brat_sticker.png" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh Gambar PNG
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Downloader Video & Media Studio (All-in-One Social Media Downloader) -->
+  <div id="downloaderModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 780px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="tool-icon-box icon-rose" style="width: 40px; height: 40px; font-size: 1.2rem;">📥</div>
+          <div>
+            <h2 class="modal-title" style="margin: 0; font-size: 1.25rem;">Downloader Video & Media</h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">Unduh video & audio dari TikTok, YouTube, Instagram, Facebook, CapCut, dan Pinterest</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" data-close="downloaderModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <!-- Kolom Kiri: Pilihan Dropdown & Tautan Input -->
+          <div class="workspace-left">
+            
+            <!-- Dua Dropdown Pilihan (Platform & Format) -->
+            <div class="converter-dropdowns-row">
+              <div class="converter-dropdown-col">
+                <label class="form-label" for="downloaderPlatform" style="font-size: 0.82rem; font-weight: 700; margin-bottom: 6px;">Pilih Platform :</label>
+                <div class="select-wrapper">
+                  <select id="downloaderPlatform" class="form-select converter-select">
+                    <option value="auto" selected>🌐 Deteksi Otomatis</option>
+                    <option value="tiktok">🎵 TikTok (No-WM & MP3)</option>
+                    <option value="youtube">▶️ YouTube (HD & MP3)</option>
+                    <option value="instagram">📸 Instagram (Reels & Foto)</option>
+                    <option value="facebook">👥 Facebook (Video HD/SD)</option>
+                    <option value="capcut">🎬 CapCut (Template Video)</option>
+                    <option value="pinterest">📌 Pinterest (Foto & Video)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="converter-dropdown-col">
+                <label class="form-label" for="downloaderFormat" style="font-size: 0.82rem; font-weight: 700; margin-bottom: 6px;">Pilihan Format :</label>
+                <div class="select-wrapper">
+                  <select id="downloaderFormat" class="form-select converter-select">
+                    <option value="video" selected>🎬 Video (MP4)</option>
+                    <option value="audio">🎵 Audio Saja (MP3)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tautan URL Media -->
+            <div class="form-group" style="margin-top: 14px; margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label" for="downloaderUrlInput" style="font-size: 0.82rem; font-weight: 700; margin-bottom: 0;">Tautan / URL Media :</label>
+                <button type="button" id="btnPasteDownloaderUrl" class="btn-remove-file" style="padding: 3px 8px; font-size: 0.74rem;">📋 Tempel</button>
+              </div>
+              <input type="text" id="downloaderUrlInput" class="form-input" placeholder="Tempel tautan video dari TikTok, YouTube, Instagram, dll...">
+              
+              <div id="downloaderHintBox" style="margin-top: 8px; font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                <span>💡</span> <span id="downloaderHintText">Mendukung link TikTok, YouTube, Instagram Reels, Facebook, CapCut, & Pinterest.</span>
+              </div>
+            </div>
+
+            <button id="btnProcessDownloader" class="btn-solid" style="width: 100%; justify-content: center; padding: 12px 16px; font-weight: 600; font-size: 0.95rem;">
+              ⚡ Unduh Media Sekarang
+            </button>
+          </div>
+
+          <!-- Kolom Kanan: Pratinjau & Hasil Unduhan -->
+          <div class="workspace-right">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Pratinjau & Hasil Unduh :</label>
+            <div class="preview-box" id="downloaderPreviewBox" style="min-height: 280px; padding: 20px 16px; flex-direction: column; justify-content: center;">
+              
+              <!-- State 1: Idle -->
+              <div id="downloaderIdleState" style="text-align: center; color: var(--text-muted); max-width: 250px; margin: auto;">
+                <div style="font-size: 2.8rem; margin-bottom: 10px; opacity: 0.85;">📥</div>
+                <div style="font-weight: 700; color: var(--text-main); font-size: 0.98rem; margin-bottom: 6px;">Siap Mengunduh Media</div>
+                <p style="font-size: 0.82rem; line-height: 1.5;">Pilih platform atau biarkan otomatis, tempel tautan video, lalu klik Mulai Unduh.</p>
+              </div>
+
+              <!-- State 2: Processing -->
+              <div id="downloaderProcessingState" style="display: none; text-align: center; width: 100%; max-width: 260px; margin: auto;">
+                <div class="processing-spinner-box" style="width: 48px; height: 48px; font-size: 1.5rem; margin-bottom: 10px;">
+                  <span class="processing-spin-icon">⏳</span>
+                </div>
+                <div style="font-weight: 700; color: var(--text-main); font-size: 0.98rem; margin-bottom: 4px;">Sedang Mengunduh...</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Mengekstrak dan memproses media dari server</div>
+              </div>
+
+              <!-- State 3: Success Result -->
+              <div id="downloaderSuccessState" style="display: none; width: 100%; text-align: center; margin: auto;">
+                <div id="downloaderMediaContainer" style="width: 100%; margin-bottom: 12px;"></div>
+                
+                <div id="downloaderResultTitle" style="font-weight: 700; color: var(--text-main); font-size: 0.95rem; margin-bottom: 4px; word-break: break-all;">Media Siap Diunduh</div>
+                <div id="downloaderResultBadge" style="margin-bottom: 14px;">
+                  <span class="tool-badge badge-mint" id="downloaderSourceTag">✅ Berhasil Diambil</span>
+                </div>
+
+                <a id="btnDownloadMedia" class="btn-solid" href="#" download="media" style="display: inline-flex; width: 100%; justify-content: center; padding: 11px; font-weight: 600; font-size: 0.92rem;">
+                  📥 Simpan File ke Perangkat
+                </a>
+
+                <button type="button" id="btnResetDownloader" class="pill-btn" style="width: 100%; margin-top: 8px; font-size: 0.82rem; justify-content: center; padding: 7px;">
+                  🔄 Unduh Tautan Lain
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Hapus Latar Belakang (Remove BG AI) -->
+  <div id="removeBgModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">✂️ Hapus Latar Belakang (Remove BG AI)</h2>
+        <button class="modal-close-btn" data-close="removeBgModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="rbFileInput">Pilih Foto atau Gambar:</label>
+              <input type="file" id="rbFileInput" accept="image/*" class="form-input">
+            </div>
+            <div style="background-color: var(--surface-alt); border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 18px; font-size: 0.88rem; color: var(--text-muted);">
+              ⚡ <strong>Didukung AI:</strong> Menghapus latar belakang foto objek, produk, maupun manusia secara otomatis dan presisi.
+            </div>
+            <button id="btnProcessRb" class="btn-solid" style="width: 100%;">
+              ⚡ Hapus Background Otomatis
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Pratinjau Hasil Transparan (PNG):</label>
+            <div class="preview-box" id="rbPreviewBox" style="background-color: var(--surface-alt);">
+              <span id="rbPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Hasil foto tanpa background akan tampil di sini.</span>
+              <img id="rbResultImg" src="" alt="Hasil Remove BG" style="display: none; max-width: 100%; max-height: 250px; object-fit: contain;">
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadRb" class="btn-solid" href="#" download="removebg_transparent.png" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh PNG Transparan
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. AI Smart Assistant Studio -->
+  <div id="aiModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🤖 AI Smart Assistant Workspace</h2>
+        <button class="modal-close-btn" data-close="aiModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="aiProviderSelect">Pilih Mesin AI:</label>
+              <select id="aiProviderSelect" class="form-select">
+                <option value="gemini">Google Gemini AI (Direkomendasikan)</option>
+                <option value="groq">Groq Llama 3.3 (Super Cepat)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="chatPromptInput">Pertanyaan atau Instruksi:</label>
+              <textarea id="chatPromptInput" class="form-textarea" placeholder="Tanya soal coding, hitung-hitungan, rangkuman teks, atau tugas kuliah..."></textarea>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+              <button class="pill-btn" style="font-size: 0.8rem; padding: 4px 10px;" onclick="document.getElementById('chatPromptInput').value = 'Buatkan ide konten menarik tentang teknologi untuk hari ini';">💡 Ide Konten</button>
+              <button class="pill-btn" style="font-size: 0.8rem; padding: 4px 10px;" onclick="document.getElementById('chatPromptInput').value = 'Jelaskan cara kerja async/await pada JavaScript secara sederhana';">💻 Coding JS</button>
+              <button class="pill-btn" style="font-size: 0.8rem; padding: 4px 10px;" onclick="document.getElementById('chatPromptInput').value = 'Rangkumkan poin-poin penting dari artikel ini: ';">📝 Rangkum</button>
+            </div>
+            <button id="btnSendAi" class="btn-solid" style="width: 100%;">
+              🚀 Kirim ke AI Assistant
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Jawaban Asisten AI:</label>
+            <div class="preview-box" id="aiResponseBox" style="text-align: left; align-items: flex-start; justify-content: flex-start; overflow-y: auto; max-height: 280px; padding: 16px;">
+              <span id="aiPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Jawaban cerdas AI akan muncul di sini secara lengkap.</span>
+              <div id="aiResponseText" style="display: none; font-size: 0.92rem; line-height: 1.6; white-space: pre-wrap; color: var(--text-main);"></div>
+            </div>
+            <div class="action-buttons">
+              <button id="btnCopyAi" class="btn-solid" style="display: none; width: 100%; justify-content: center;">
+                📋 Salin Jawaban AI
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="converterModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🎙️ Audio & Voice Note Converter Studio</h2>
+        <button class="modal-close-btn" data-close="converterModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="convFileInput">Pilih File Video atau Audio:</label>
+              <input type="file" id="convFileInput" accept="video/*,audio/*" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pilihan Format Hasil:</label>
+              <div style="display: flex; gap: 14px;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="radio" name="convFormat" value="vn" checked> Voice Note WA (Opus/OGG)
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="radio" name="convFormat" value="mp3"> Audio Standar (MP3)
+                </label>
+              </div>
+            </div>
+            <div style="background-color: var(--surface-alt); border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 18px; font-size: 0.85rem; color: var(--text-muted);">
+              ⚡ <strong>Fitur:</strong> Voice Note otomatis diproses dengan codec resmi WhatsApp (libopus 64k VoIP) agar langsung bisa diputar di WA.
+            </div>
+            <button id="btnProcessConv" class="btn-solid" style="width: 100%;">
+              ⚡ Konversi Media Sekarang
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Pratinjau Hasil Audio:</label>
+            <div class="preview-box" id="convPreviewBox">
+              <span id="convPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Pratinjau pemutar audio hasil konversi akan muncul di sini.</span>
+              <audio id="convAudioPlayer" controls style="display: none; width: 100%;"></audio>
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadConv" class="btn-solid" href="#" download="converted_audio" style="display: none; width: 100%; justify-content: center;">
+                💾 Simpan Hasil Audio
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. OCR Scanner Studio -->
+  <div id="ocrModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🔍 OCR Scanner Studio (Gambar ke Teks)</h2>
+        <button class="modal-close-btn" data-close="ocrModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="ocrFileInput">Unggah Foto, Struk, atau Screenshot:</label>
+              <input type="file" id="ocrFileInput" accept="image/*" class="form-input">
+            </div>
+            <div style="background-color: var(--surface-alt); border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 18px; font-size: 0.88rem; color: var(--text-muted);">
+              ⚡ <strong>Dual Engine Tesseract:</strong> Mengenali bahasa Indonesia dan Inggris sekaligus secara lokal dan cepat.
+            </div>
+            <button id="btnProcessOcr" class="btn-solid" style="width: 100%;">
+              🔍 Ekstrak Teks Sekarang
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Teks yang Berhasil Dibaca:</label>
+            <div class="preview-box" id="ocrPreviewBox" style="padding: 10px; align-items: stretch;">
+              <textarea id="ocrResultText" class="form-textarea" placeholder="Teks hasil scan OCR akan otomatis muncul di sini..." readonly style="height: 190px; border: none; background: transparent;"></textarea>
+            </div>
+            <div class="action-buttons">
+              <button id="btnCopyOcr" class="btn-solid" style="width: 100%; justify-content: center;">
+                📋 Salin Semua Teks
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. Cek Tagihan Listrik PLN Studio -->
+  <div id="plnModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">⚡ Cek Tagihan Listrik PLN Studio</h2>
+        <button class="modal-close-btn" data-close="plnModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="plnNopelInput">ID Pelanggan / Nomor Meteran PLN:</label>
+              <input type="text" id="plnNopelInput" class="form-input" placeholder="Contoh: 512345678901">
+            </div>
+            <div style="background-color: var(--surface-alt); border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 18px; font-size: 0.88rem; color: var(--text-muted);">
+              ⚡ <strong>Data Resmi PLN:</strong> Memeriksa nama pelanggan, tarif daya, rincian meter, dan total tagihan bulanan langsung secara online.
+            </div>
+            <button id="btnCheckPln" class="btn-solid" style="width: 100%;">
+              🔍 Periksa Tagihan Sekarang
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Rincian Struk Tagihan PLN:</label>
+            <div class="preview-box" id="plnPreviewBox" style="padding: 16px; align-items: stretch; justify-content: flex-start;">
+              <div id="plnPlaceholder" style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin: auto;">Masukkan nomor meteran dan klik "Periksa Tagihan".</div>
+              <table id="plnTable" style="display: none; width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+                <tbody>
+                  <tr style="border-bottom: 1px solid var(--line);"><td style="padding: 6px 0; color: var(--text-muted);">Nama:</td><td id="plnNama" style="padding: 6px 0; font-weight: 600; text-align: right;"></td></tr>
+                  <tr style="border-bottom: 1px solid var(--line);"><td style="padding: 6px 0; color: var(--text-muted);">ID Pelanggan:</td><td id="plnId" style="padding: 6px 0; font-weight: 600; text-align: right;"></td></tr>
+                  <tr style="border-bottom: 1px solid var(--line);"><td style="padding: 6px 0; color: var(--text-muted);">Tarif / Daya:</td><td id="plnTarif" style="padding: 6px 0; font-weight: 600; text-align: right;"></td></tr>
+                  <tr style="border-bottom: 1px solid var(--line);"><td style="padding: 6px 0; color: var(--text-muted);">Periode:</td><td id="plnPeriode" style="padding: 6px 0; font-weight: 600; text-align: right;"></td></tr>
+                  <tr style="border-bottom: 1px solid var(--line);"><td style="padding: 6px 0; color: var(--text-muted);">Stand Meter:</td><td id="plnMeter" style="padding: 6px 0; font-weight: 600; text-align: right;"></td></tr>
+                  <tr><td style="padding: 8px 0; font-weight: 700; color: var(--primary);">Total Tagihan:</td><td id="plnTotal" style="padding: 8px 0; font-weight: 800; font-size: 1.1rem; text-align: right; color: var(--primary);"></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="action-buttons">
+              <button id="btnCopyPln" class="btn-solid" style="display: none; width: 100%; justify-content: center;">
+                📋 Salin Rincian Tagihan
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. Converter File Studio -->
+  <div id="pdfModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 780px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="tool-icon-box icon-violet" style="width: 40px; height: 40px; font-size: 1.2rem;">📑</div>
+          <div>
+            <h2 class="modal-title" style="margin: 0; font-size: 1.25rem;">Converter File</h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">Konversi dokumen & berkas antar format: PDF, Word, Excel, PPTX, dan Gambar</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" data-close="pdfModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <!-- Kolom Kiri: Pilihan Dropdown & Unggah Berkas -->
+          <div class="workspace-left">
+            
+            <!-- Dua Dropdown Pilihan Format (Simple & Mudah Dipahami) -->
+            <div class="converter-dropdowns-row">
+              <div class="converter-dropdown-col">
+                <label class="form-label" for="convertFromFile" style="font-size: 0.82rem; font-weight: 700; margin-bottom: 6px;">Dari file :</label>
+                <div class="select-wrapper">
+                  <select id="convertFromFile" class="form-select converter-select">
+                    <option value="word" selected>📘 Word (.docx, .doc)</option>
+                    <option value="pdf">📕 PDF (.pdf)</option>
+                    <option value="excel">📗 Excel (.xlsx, .xls)</option>
+                    <option value="pptx">📙 PPTX (.pptx, .ppt)</option>
+                    <option value="gambar">🖼️ Gambar (png, jpeg, jpg, dll)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="converter-swap-col">
+                <button type="button" id="btnSwapDirection" class="btn-swap-dropdown" title="Tukar Format Asal & Tujuan">
+                  ⇄
+                </button>
+              </div>
+
+              <div class="converter-dropdown-col">
+                <label class="form-label" for="convertToFile" style="font-size: 0.82rem; font-weight: 700; margin-bottom: 6px;">Ke file :</label>
+                <div class="select-wrapper">
+                  <select id="convertToFile" class="form-select converter-select">
+                    <option value="pdf" selected>📕 PDF (.pdf)</option>
+                    <option value="word">📘 Word (.docx, .doc)</option>
+                    <option value="excel">📗 Excel (.xlsx, .xls)</option>
+                    <option value="pptx">📙 PPTX (.pptx, .ppt)</option>
+                    <option value="gambar">🖼️ Gambar (png, jpeg, jpg, dll)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Area Unggah Berkas -->
+            <div class="form-group" style="margin-top: 14px; margin-bottom: 14px;">
+              <label class="form-label" id="docFileLabel" style="font-size: 0.82rem; font-weight: 700;">Unggah Berkas Anda :</label>
+              
+              <div id="dropzoneBox" class="file-dropzone" style="padding: 22px 14px;">
+                <div class="dropzone-circle-icon" id="dropzoneIcon" style="width: 44px; height: 44px; font-size: 1.3rem; margin-bottom: 8px;">📂</div>
+                <div class="dropzone-title" id="dropzoneTitle" style="font-size: 0.9rem;">Tarik file ke sini atau <span class="dropzone-browse-link">klik untuk memilih</span></div>
+                <div class="dropzone-accepted-badge" id="dropzoneExtBadge" style="margin-top: 8px; font-size: 0.72rem;">Menerima: .docx, .doc</div>
+                <input type="file" id="docFileInput" style="display: none;" accept=".docx,.doc,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+              </div>
+
+              <!-- Kartu File Terpilih -->
+              <div id="selectedFileCard" class="selected-file-display" style="display: none;">
+                <div class="file-info-left">
+                  <div class="file-icon-square" id="selectedFileIcon">📘</div>
+                  <div style="min-width: 0;">
+                    <div class="file-meta-name" id="selectedFileName">document.docx</div>
+                    <div class="file-meta-size" id="selectedFileSize">0 KB</div>
+                  </div>
+                </div>
+                <button type="button" id="btnRemoveFile" class="btn-remove-file" title="Ganti Berkas">✕ Ganti</button>
+              </div>
+            </div>
+
+            <button id="btnProcessDoc" class="btn-solid" style="width: 100%; justify-content: center; padding: 12px 16px; font-weight: 600; font-size: 0.95rem;">
+              ⚡ Mulai Konversi Sekarang
+            </button>
+          </div>
+
+          <!-- Kolom Kanan: Hasil & Preview -->
+          <div class="workspace-right">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Hasil Dokumen Siap Unduh :</label>
+            <div class="preview-box" id="docPreviewBox" style="min-height: 280px; padding: 22px 16px; flex-direction: column; justify-content: center;">
+              
+              <!-- State 1: Idle -->
+              <div id="docIdleState" style="text-align: center; color: var(--text-muted); max-width: 250px; margin: auto;">
+                <div style="font-size: 2.8rem; margin-bottom: 10px; opacity: 0.85;">📑</div>
+                <div style="font-weight: 700; color: var(--text-main); font-size: 0.98rem; margin-bottom: 6px;">Siap Mengonversi File</div>
+                <p style="font-size: 0.82rem; line-height: 1.5;">Pilih opsi dari dropdown di sebelah kiri, unggah berkas, lalu tekan tombol konversi.</p>
+              </div>
+
+              <!-- State 2: Processing -->
+              <div id="docProcessingState" style="display: none; text-align: center; width: 100%; max-width: 260px; margin: auto;">
+                <div class="processing-spinner-box" style="width: 48px; height: 48px; font-size: 1.5rem; margin-bottom: 10px;">
+                  <span class="processing-spin-icon">⏳</span>
+                </div>
+                <div style="font-weight: 700; color: var(--text-main); font-size: 0.98rem; margin-bottom: 4px;">Sedang Mengonversi...</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Berkas Anda sedang diproses oleh engine server</div>
+              </div>
+
+              <!-- State 3: Success Card -->
+              <div id="docSuccessCard" style="display: none; width: 100%; text-align: center; margin: auto;">
+                <div class="success-icon-badge" id="docResultIcon" style="font-size: 3.2rem;">📄</div>
+                <div id="docResultName" class="success-file-title" style="font-size: 1rem;">dokumen_converted.pdf</div>
+                <div id="docResultMeta" class="success-file-meta" style="font-size: 0.82rem; margin-bottom: 12px;">Format: PDF | Ukuran: 14.5 KB</div>
+                
+                <div style="margin-bottom: 14px;">
+                  <span class="tool-badge badge-mint" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; font-size: 0.8rem; font-weight: 600;">
+                    ✅ Konversi Berhasil
+                  </span>
+                </div>
+
+                <a id="btnDownloadDoc" class="btn-solid" href="#" download="" style="display: inline-flex; width: 100%; justify-content: center; padding: 11px; font-weight: 600; font-size: 0.92rem;">
+                  📥 Unduh File Hasil Konversi
+                </a>
+
+                <button type="button" id="btnResetConverter" class="pill-btn" style="width: 100%; margin-top: 8px; font-size: 0.82rem; justify-content: center; padding: 7px;">
+                  🔄 Konversi Berkas Lain
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14. Brat Video Studio (Animasi MP4) -->
+  <div id="bratVideoModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🎬 Brat Video Studio (Animasi MP4)</h2>
+        <button class="modal-close-btn" data-close="bratVideoModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="bratVidTextInput">Teks Animasi Brat (Muncul Kata Demi Kata):</label>
+              <textarea id="bratVidTextInput" class="form-textarea" placeholder="Ketik kata-kata untuk animasi video Brat...">i think about it all the time</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pilih Warna Solid Background:</label>
+              <div id="bratVidColorChips" class="color-chips"></div>
+            </div>
+            <div style="background-color: var(--surface-alt); border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 18px; font-size: 0.85rem; color: var(--text-muted);">
+              ⚡ <strong>Fitur:</strong> Animasi teks muncul bertahap dan berkedip dalam format video MP4 looping.
+            </div>
+            <button id="btnProcessBratVid" class="btn-solid" style="width: 100%;">
+              ⚡ Buat Video Brat (MP4)
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Pratinjau Hasil Video:</label>
+            <div class="preview-box" id="bratVidPreviewBox">
+              <span id="bratVidPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Pratinjau video Brat akan tampil dan dapat diputar di sini.</span>
+              <video id="bratVidPlayer" controls style="display: none; max-width: 100%; max-height: 250px; border-radius: 8px;"></video>
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadBratVid" class="btn-solid" href="#" download="brat_animation.mp4" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh Video MP4
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15. Quote Chat Maker (QC Studio) -->
+  <div id="quoteChatModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">💬 Quote Chat Maker (QC Studio)</h2>
+        <button class="modal-close-btn" data-close="quoteChatModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="qcNameInput">Nama Pengirim / Username:</label>
+              <input type="text" id="qcNameInput" class="form-input" placeholder="Contoh: Novemas Heka" value="Novemas Heka">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="qcTextInput">Isi Pesan Quote Chat:</label>
+              <textarea id="qcTextInput" class="form-textarea" placeholder="Tulis kutipan kata-kata chat di sini...">Belajar setiap hari, bertumbuh setiap detik. 🚀</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="qcAvatarInput">Foto Profil Avatar (Opsional):</label>
+              <input type="file" id="qcAvatarInput" accept="image/*" class="form-input">
+            </div>
+            <button id="btnProcessQc" class="btn-solid" style="width: 100%;">
+              ⚡ Buat Quote Chat
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Pratinjau Quote Chat Gelembung:</label>
+            <div class="preview-box" id="qcPreviewBox" style="background-color: #0b111a; padding: 16px;">
+              <span id="qcPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Pratinjau gelembung chat quote akan tampil di sini.</span>
+              <img id="qcResultImg" src="" alt="Pratinjau Quote Chat" style="display: none; max-width: 100%; max-height: 250px; object-fit: contain;">
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadQc" class="btn-solid" href="#" download="quote_chat.png" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh Gambar Quote
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 16. Penjernih Foto AI (HDR & Upscale) -->
+  <div id="hdrModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">✨ Penjernih Foto AI (HDR & Upscale)</h2>
+        <button class="modal-close-btn" data-close="hdrModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="hdrFileInput">Pilih Foto yang Ingin Dijernihkan:</label>
+              <input type="file" id="hdrFileInput" accept="image/*" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tingkat Ketajaman / Resolusi:</label>
+              <div style="display: flex; gap: 14px;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="radio" name="hdrScale" value="2" checked> 2x (Cepat & Halus)
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <input type="radio" name="hdrScale" value="4"> 4x (Resolusi Ekstra HD)
+                </label>
+              </div>
+            </div>
+            <div style="background-color: var(--surface-alt); border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 18px; font-size: 0.85rem; color: var(--text-muted);">
+              ⚡ <strong>Real-ESRGAN AI:</strong> Menghilangkan noise/blur pada foto resolusi rendah dan meningkatkan detail secara signifikan.
+            </div>
+            <button id="btnProcessHdr" class="btn-solid" style="width: 100%;">
+              ⚡ Tingkatkan Resolusi Foto
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Hasil Foto Super Jernih (HD):</label>
+            <div class="preview-box" id="hdrPreviewBox">
+              <span id="hdrPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Hasil foto yang telah di-upscale akan tampil di sini.</span>
+              <img id="hdrResultImg" src="" alt="Hasil HDR" style="display: none; max-width: 100%; max-height: 250px; object-fit: contain;">
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadHdr" class="btn-solid" href="#" download="hdr_upscaled.png" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh Foto HD
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 17. Pewarna Foto Otomatis (Recolor AI) -->
+  <div id="recolorModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🎨 Pewarna Foto Otomatis (Recolor AI)</h2>
+        <button class="modal-close-btn" data-close="recolorModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="recolorFileInput">Pilih Foto Hitam-Putih / Foto Jadul:</label>
+              <input type="file" id="recolorFileInput" accept="image/*" class="form-input">
+            </div>
+            <div style="background-color: var(--surface-alt); border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 18px; font-size: 0.85rem; color: var(--text-muted);">
+              ⚡ <strong>AI Colorization:</strong> Menganalisis elemen foto grayscale dan memberi warna realistis secara otomatis.
+            </div>
+            <button id="btnProcessRecolor" class="btn-solid" style="width: 100%;">
+              ⚡ Beri Warna Gambar Sekarang
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Hasil Foto Berwarna Alami:</label>
+            <div class="preview-box" id="recolorPreviewBox">
+              <span id="recolorPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Pratinjau foto berwarna akan muncul di sini.</span>
+              <img id="recolorResultImg" src="" alt="Hasil Recolor" style="display: none; max-width: 100%; max-height: 250px; object-fit: contain;">
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadRecolor" class="btn-solid" href="#" download="recolor_photo.png" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh Foto Berwarna
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 18. WhatsApp Sticker Maker (SWM Studio) -->
+  <div id="stickerMakerModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🏷️ WhatsApp Sticker Maker (SWM)</h2>
+        <button class="modal-close-btn" data-close="stickerMakerModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="smFileInput">Pilih Gambar / Foto:</label>
+              <input type="file" id="smFileInput" accept="image/*" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="smPackInput">Nama Paket Stiker (Pack Name):</label>
+              <input type="text" id="smPackInput" class="form-input" value="HekaTools Web" placeholder="Contoh: Stiker Keren">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="smAuthorInput">Nama Pembuat (Author Name):</label>
+              <input type="text" id="smAuthorInput" class="form-input" value="Novemas Heka" placeholder="Nama Anda">
+            </div>
+            <button id="btnProcessSticker" class="btn-solid" style="width: 100%;">
+              ⚡ Buat Stiker WebP Sekarang
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Pratinjau Stiker WebP:</label>
+            <div class="preview-box" id="stickerPreviewBox" style="background-color: var(--surface-alt);">
+              <span id="stickerPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Stiker WebP dengan metadata EXIF akan muncul di sini.</span>
+              <img id="stickerResultImg" src="" alt="Pratinjau Stiker WebP" style="display: none; max-width: 100%; max-height: 250px; object-fit: contain;">
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadSticker" class="btn-solid" href="#" download="custom_sticker.webp" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh Stiker (.webp)
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 19. AI Image Generator Studio (Text-to-Image FLUX) -->
+  <div id="imageGenModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🎨 AI Image Generator (Text-to-Image)</h2>
+        <button class="modal-close-btn" data-close="imageGenModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="imgGenPrompt">Deskripsi Gambar (Prompt):</label>
+              <textarea id="imgGenPrompt" class="form-input" rows="4" placeholder="Contoh: Kucing berjaket cyberpunk di atas atap kota neon saat malam hari, pencahayaan sinematik 8k"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="imgGenStyle">Gaya Visual (Style):</label>
+              <select id="imgGenStyle" class="form-input">
+                <option value="photorealistic">📸 Fotorealistis (Photorealistic)</option>
+                <option value="anime">🌸 Anime / Manga Visual</option>
+                <option value="digital art 3d">🔮 Digital Art 3D Render</option>
+                <option value="cyberpunk">🌃 Cyberpunk & Sci-Fi</option>
+                <option value="cinematic fantasy">🏰 Cinematic Fantasy</option>
+                <option value="oil painting">🎨 Lukisan Cat Minyak (Oil Painting)</option>
+                <option value="none">✨ Bebas / Sesuai Prompt Teks</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="imgGenRatio">Rasio & Resolusi:</label>
+              <select id="imgGenRatio" class="form-input">
+                <option value="1024x1024">Persegi 1:1 (1024 x 1024 px)</option>
+                <option value="768x1344">Potret 9:16 (768 x 1344 px)</option>
+                <option value="1344x768">Lanskap 16:9 (1344 x 768 px)</option>
+              </select>
+            </div>
+            <button id="btnGenerateImage" class="btn-solid" style="width: 100%;">
+              ⚡ Generate Gambar AI Sekarang
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Hasil Karya Gambar AI:</label>
+            <div class="preview-box" id="imgGenPreviewBox" style="background-color: var(--surface-alt); min-height: 280px;">
+              <span id="imgGenPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Gambar karya AI resolusi tinggi akan muncul di sini.</span>
+              <img id="imgGenResultImg" src="" alt="Hasil Gambar AI" style="display: none; max-width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px;">
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadImgGen" class="btn-solid" href="#" download="ai_generated_image.jpg" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh Gambar HD (.jpg)
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 20. QR Code Studio (Generator & Scanner) -->
+  <div id="qrStudioModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">📱 QR Code Studio (Generator & Scanner)</h2>
+        <button class="modal-close-btn" data-close="qrStudioModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="studio-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <button id="tabQrGen" class="filter-chip active" type="button">✨ Buat QR Code</button>
+          <button id="tabQrScan" class="filter-chip" type="button">📷 Scan QR Code</button>
+        </div>
+
+        <!-- Tab 1: QR Generator -->
+        <div id="qrGenPanel" class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="qrTypeSelect">Tipe Konten QR:</label>
+              <select id="qrTypeSelect" class="form-input">
+                <option value="url">🔗 Tautan URL / Website</option>
+                <option value="text">📝 Teks Bebas</option>
+                <option value="whatsapp">💬 Chat WhatsApp Langsung</option>
+                <option value="wifi">📶 Akses WiFi Otomatis</option>
+              </select>
+            </div>
+            <div class="form-group" id="qrInputWrapper">
+              <label class="form-label" id="qrInputLabel" for="qrContentInput">Isi Konten / URL:</label>
+              <input type="text" id="qrContentInput" class="form-input" placeholder="https://contoh-website.com">
+            </div>
+            <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="form-group">
+                <label class="form-label" for="qrColorInput">Warna QR:</label>
+                <input type="color" id="qrColorInput" class="form-input" value="#000000" style="padding: 4px; height: 42px;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="qrBgColorInput">Warna Latar:</label>
+                <input type="color" id="qrBgColorInput" class="form-input" value="#ffffff" style="padding: 4px; height: 42px;">
+              </div>
+            </div>
+            <button id="btnCreateQr" class="btn-solid" style="width: 100%;">
+              ⚡ Buat QR Code
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Pratinjau QR Code:</label>
+            <div class="preview-box" id="qrPreviewBox" style="background-color: var(--surface-alt); min-height: 240px;">
+              <span id="qrPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">QR Code siap scan akan muncul di sini.</span>
+              <img id="qrResultImg" src="" alt="Pratinjau QR Code" style="display: none; max-width: 220px; max-height: 220px; object-fit: contain;">
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadQr" class="btn-solid" href="#" download="qrcode.png" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh QR Code (.png)
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: QR Scanner -->
+        <div id="qrScanPanel" class="workspace-grid" style="display: none;">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="qrScanFileInput">Unggah Foto QR Code:</label>
+              <input type="file" id="qrScanFileInput" accept="image/*" class="form-input">
+            </div>
+            <button id="btnScanQr" class="btn-solid" style="width: 100%;">
+              🔍 Pindai & Baca Isi QR Code
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Hasil Dekripsi QR Code:</label>
+            <div class="preview-box" style="background-color: var(--surface-alt); min-height: 140px; padding: 14px; text-align: left; align-items: flex-start;">
+              <div id="qrScanResultText" style="word-break: break-all; font-family: monospace; font-size: 0.95rem; color: var(--text-color);">
+                Belum ada QR Code yang dipindai.
+              </div>
+            </div>
+            <div class="action-buttons" id="qrScanActions" style="display: none; gap: 8px; margin-top: 10px;">
+              <button id="btnCopyQrResult" class="btn-solid" style="flex: 1; justify-content: center;">📋 Salin Teks</button>
+              <a id="btnOpenQrUrl" class="btn-solid" href="#" target="_blank" rel="noopener noreferrer" style="flex: 1; justify-content: center; display: none;">🔗 Buka Tautan</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 21. Text-to-Speech Studio (Voice MP3) -->
+  <div id="ttsStudioModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🗣️ Text-to-Speech Studio (Voice Generator)</h2>
+        <button class="modal-close-btn" data-close="ttsStudioModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="ttsTextInput">Ketik Teks yang Ingin Diucapkan:</label>
+              <textarea id="ttsTextInput" class="form-input" rows="4" placeholder="Ketik kalimat di sini untuk diubah menjadi suara audio MP3..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ttsLangSelect">Pilihan Bahasa / Logat:</label>
+              <select id="ttsLangSelect" class="form-input">
+                <option value="id">🇮🇩 Bahasa Indonesia (Natural)</option>
+                <option value="en">🇺🇸 English (United States)</option>
+                <option value="en-gb">🇬🇧 English (United Kingdom)</option>
+                <option value="ja">🇯🇵 Japanese (日本語)</option>
+                <option value="ar">🇸🇦 Arabic (العربية)</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="btnPlayTts" class="btn-solid" style="flex: 1; justify-content: center;">
+                ▶️ Putar Suara
+              </button>
+              <button id="btnStopTts" class="btn-outline" style="justify-content: center;">
+                ⏹️ Berhenti
+              </button>
+            </div>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Pemutar Audio & File MP3:</label>
+            <div class="preview-box" id="ttsPreviewBox" style="background-color: var(--surface-alt); min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 14px;">
+              <span id="ttsPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Audio player MP3 akan muncul di sini.</span>
+              <audio id="ttsAudioPlayer" controls style="display: none; width: 100%; max-width: 320px;"></audio>
+            </div>
+            <div class="action-buttons">
+              <a id="btnDownloadTts" class="btn-solid" href="#" download="suara_tts.mp3" style="display: none; width: 100%; justify-content: center;">
+                📥 Unduh Audio (.mp3)
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 22. Shortlink URL Generator Studio -->
+  <div id="shortlinkModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🔗 Shortlink URL Generator</h2>
+        <button class="modal-close-btn" data-close="shortlinkModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="workspace-grid">
+          <div class="workspace-left">
+            <div class="form-group">
+              <label class="form-label" for="shortlinkLongUrl">Masukkan Tautan URL Panjang:</label>
+              <input type="url" id="shortlinkLongUrl" class="form-input" placeholder="https://contoh-tautan-panjang.com/halaman/artikel-sangat-panjang">
+            </div>
+            <button id="btnProcessShortlink" class="btn-solid" style="width: 100%;">
+              ⚡ Pendekkan URL Sekarang
+            </button>
+          </div>
+          <div class="workspace-right">
+            <label class="form-label">Hasil Tautan Ringkas:</label>
+            <div class="preview-box" id="shortlinkPreviewBox" style="background-color: var(--surface-alt); min-height: 180px; padding: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
+              <span id="shortlinkPlaceholder" style="color: var(--text-muted); font-size: 0.9rem;">Tautan pendek akan siap disalin di sini.</span>
+              <div id="shortlinkResultCard" style="display: none; width: 100%; text-align: center;">
+                <input type="text" id="shortlinkResultInput" class="form-input" readonly style="text-align: center; font-weight: 600; color: var(--accent); margin-bottom: 10px;">
+                <div style="display: flex; gap: 8px; justify-content: center;">
+                  <button id="btnCopyShortlink" class="btn-solid" type="button" style="padding: 8px 16px;">📋 Salin</button>
+                  <a id="btnVisitShortlink" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer" style="padding: 8px 16px;">🔗 Kunjungi</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 23. Portal Religi & Ibadah (Al-Qur'an, Jadwal Sholat, Alkitab) -->
+  <div id="religiModal" class="modal-overlay">
+    <div class="modal-container modal-lg" style="max-width: 850px;">
+      <div class="modal-header">
+        <h2 class="modal-title">🕌 Portal Religi & Ibadah</h2>
+        <button class="modal-close-btn" data-close="religiModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="studio-tabs" style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+          <button id="tabQuran" class="filter-chip active" type="button">📖 Al-Qur'an Digital</button>
+          <button id="tabPrayer" class="filter-chip" type="button">⏰ Jadwal Sholat Kota</button>
+          <button id="tabBible" class="filter-chip" type="button">✝️ Alkitab Digital</button>
+        </div>
+
+        <!-- Panel 1: Al-Qur'an Digital -->
+        <div id="quranPanel">
+          <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 16px;">
+            <select id="quranSurahSelect" class="form-input">
+              <option value="">Memuat 114 Surat Al-Qur'an...</option>
+            </select>
+            <input type="number" id="quranAyatInput" class="form-input" placeholder="Ayat (opsional)" min="1">
+            <button id="btnReadQuran" class="btn-solid" type="button">
+              📖 Buka Surat
+            </button>
+          </div>
+
+          <div id="quranSurahHeader" style="display: none; background: var(--surface-alt); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--accent); margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 id="quranSurahTitle" style="margin: 0; font-size: 1.2rem; color: var(--text-color);">Al-Fatihah</h3>
+                <span id="quranSurahSubtitle" style="font-size: 0.88rem; color: var(--text-muted);">Pembukaan • 7 Ayat • Makkiyyah</span>
+              </div>
+              <div id="quranSurahArabic" style="font-size: 1.8rem; font-family: 'Amiri', 'Traditional Arabic', serif; color: var(--accent);">الفاتحة</div>
+            </div>
+          </div>
+
+          <div id="quranAyatContainer" style="max-height: 420px; overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="text-align: center; color: var(--text-muted); padding: 30px;">
+              Pilih salah satu dari 114 surat Al-Qur'an di atas untuk membaca ayat, transliterasi Latin, dan terjemahan Kemenag RI.
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Jadwal Sholat -->
+        <div id="prayerPanel" style="display: none;">
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="prayerCityInput" class="form-input" value="Jakarta" placeholder="Ketik nama kota (contoh: Jakarta, Bandung, Surabaya, Medan)...">
+            <button id="btnSearchPrayer" class="btn-solid" type="button" style="white-space: nowrap;">
+              🔍 Cari Jadwal
+            </button>
+          </div>
+
+          <div id="prayerResultCard" style="display: none;">
+            <div style="background: var(--surface-alt); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--accent); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <h3 id="prayerCityTitle" style="margin: 0; font-size: 1.15rem; color: var(--text-color);">Kota Jakarta</h3>
+                <span id="prayerDateHijri" style="font-size: 0.85rem; color: var(--text-muted);">Tanggal Hijriah & Masehi</span>
+              </div>
+              <div id="prayerDateMasehi" style="font-size: 0.9rem; font-weight: 600; color: var(--accent);">Hari Ini</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px;">
+              <div class="prayer-time-box" style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">IMSAK</div>
+                <div id="timeImsak" style="font-size: 1.2rem; font-weight: 700; color: var(--accent); margin-top: 4px;">--:--</div>
+              </div>
+              <div class="prayer-time-box" style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">SUBUH</div>
+                <div id="timeSubuh" style="font-size: 1.2rem; font-weight: 700; color: var(--accent); margin-top: 4px;">--:--</div>
+              </div>
+              <div class="prayer-time-box" style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">TERBIT</div>
+                <div id="timeTerbit" style="font-size: 1.2rem; font-weight: 700; color: var(--text-muted); margin-top: 4px;">--:--</div>
+              </div>
+              <div class="prayer-time-box" style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">DZUHUR</div>
+                <div id="timeDzuhur" style="font-size: 1.2rem; font-weight: 700; color: var(--accent); margin-top: 4px;">--:--</div>
+              </div>
+              <div class="prayer-time-box" style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">ASHAR</div>
+                <div id="timeAshar" style="font-size: 1.2rem; font-weight: 700; color: var(--accent); margin-top: 4px;">--:--</div>
+              </div>
+              <div class="prayer-time-box" style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">MAGHRIB</div>
+                <div id="timeMaghrib" style="font-size: 1.2rem; font-weight: 700; color: var(--accent); margin-top: 4px;">--:--</div>
+              </div>
+              <div class="prayer-time-box" style="background: var(--surface-alt); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">ISYA</div>
+                <div id="timeIsya" style="font-size: 1.2rem; font-weight: 700; color: var(--accent); margin-top: 4px;">--:--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: Alkitab Digital -->
+        <div id="biblePanel" style="display: none;">
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="biblePassageInput" class="form-input" placeholder="Contoh: Yohanes 3:16, Kejadian 1:1, Mazmur 23">
+            <button id="btnSearchBible" class="btn-solid" type="button" style="white-space: nowrap;">
+              🔍 Cari Ayat
+            </button>
+          </div>
+          <div id="bibleVerseContainer" style="max-height: 400px; overflow-y: auto; background: var(--surface-alt); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--line);">
+            <div style="text-align: center; color: var(--text-muted);">
+              Masukkan nama kitab, pasal, dan ayat di atas untuk membaca teks Alkitab berbahasa Indonesia.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 24. Kamus KBBI & Ensiklopedia Wikipedia Studio -->
+  <div id="encyclopediaModal" class="modal-overlay">
+    <div class="modal-container modal-lg" style="max-width: 800px;">
+      <div class="modal-header">
+        <h2 class="modal-title">📚 Kamus KBBI & Ensiklopedia Wikipedia</h2>
+        <button class="modal-close-btn" data-close="encyclopediaModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="studio-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <button id="tabKbbi" class="filter-chip active" type="button">📖 Kamus KBBI</button>
+          <button id="tabWiki" class="filter-chip" type="button">🌐 Wikipedia Indonesia</button>
+        </div>
+
+        <!-- Panel 1: KBBI -->
+        <div id="kbbiPanel">
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="kbbiInput" class="form-input" placeholder="Masukkan kata baku (contoh: cendekia, abadi, teknologi)...">
+            <button id="btnSearchKbbi" class="btn-solid" type="button" style="white-space: nowrap;">
+              🔍 Cari di KBBI
+            </button>
+          </div>
+          <div id="kbbiResultBox" style="background: var(--surface-alt); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--line); min-height: 140px;">
+            <div style="color: var(--text-muted); text-align: center; padding: 20px;">
+              Ketik kata dasar atau kata baku di atas untuk melihat makna resmi Kamus Besar Bahasa Indonesia.
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Wikipedia -->
+        <div id="wikiPanel" style="display: none;">
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="wikiInput" class="form-input" placeholder="Masukkan topik ensiklopedia (contoh: Indonesia, Gravitasi, Komputer)...">
+            <button id="btnSearchWiki" class="btn-solid" type="button" style="white-space: nowrap;">
+              🔍 Cari di Wikipedia
+            </button>
+          </div>
+          <div id="wikiResultBox" style="background: var(--surface-alt); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--line); min-height: 140px;">
+            <div style="color: var(--text-muted); text-align: center; padding: 20px;">
+              Cari artikel ilmiah, tokoh, sejarah, atau pengetahuan umum di Wikipedia Indonesia.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 25. Cuaca & Kode Pos Indonesia Studio -->
+  <div id="geoInfoModal" class="modal-overlay">
+    <div class="modal-container modal-lg" style="max-width: 800px;">
+      <div class="modal-header">
+        <h2 class="modal-title">⛅ Cuaca & Kode Pos Indonesia</h2>
+        <button class="modal-close-btn" data-close="geoInfoModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="studio-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <button id="tabWeather" class="filter-chip active" type="button">🌤️ Prakiraan Cuaca Kota</button>
+          <button id="tabKodepos" class="filter-chip" type="button">📮 Pencarian Kode Pos</button>
+        </div>
+
+        <!-- Panel 1: Cuaca -->
+        <div id="weatherPanel">
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="weatherCityInput" class="form-input" value="Jakarta" placeholder="Nama kota (contoh: Bandung, Surabaya, Medan, Makassar)...">
+            <button id="btnSearchWeather" class="btn-solid" type="button" style="white-space: nowrap;">
+              🔍 Cek Cuaca
+            </button>
+          </div>
+          <div id="weatherResultBox" style="background: var(--surface-alt); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--line); min-height: 150px;">
+            <div style="color: var(--text-muted); text-align: center; padding: 20px;">
+              Masukkan nama kota di atas untuk melihat suhu, kelembapan, dan prakiraan cuaca.
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Kode Pos -->
+        <div id="kodeposPanel" style="display: none;">
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <input type="text" id="kodeposQueryInput" class="form-input" placeholder="Nama kelurahan, desa, kecamatan, kota, atau kode pos 5 digit...">
+            <button id="btnSearchKodepos" class="btn-solid" type="button" style="white-space: nowrap;">
+              🔍 Cari Kode Pos
+            </button>
+          </div>
+          <div id="kodeposResultBox" style="max-height: 380px; overflow-y: auto; background: var(--surface-alt); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--line);">
+            <div style="color: var(--text-muted); text-align: center; padding: 20px;">
+              Database lengkap 80.000+ kode pos desa, kelurahan, dan kecamatan se-Indonesia.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 26. Pencari Lirik Lagu Studio -->
+  <div id="lyricsModal" class="modal-overlay">
+    <div class="modal-container modal-lg" style="max-width: 750px;">
+      <div class="modal-header">
+        <h2 class="modal-title">🎵 Pencari Lirik Lagu</h2>
+        <button class="modal-close-btn" data-close="lyricsModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-bottom: 16px;">
+          <input type="text" id="lyricsArtistInput" class="form-input" placeholder="Nama Penyanyi / Artis (contoh: Coldplay, Sheila on 7)">
+          <input type="text" id="lyricsTitleInput" class="form-input" placeholder="Judul Lagu (contoh: Yellow, Dan)">
+          <button id="btnSearchLyrics" class="btn-solid" type="button" style="white-space: nowrap;">
+            🔍 Cari Lirik
+          </button>
+        </div>
+        <div id="lyricsResultCard" style="display: none; background: var(--surface-alt); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--line);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px;">
+            <div>
+              <h3 id="lyricsDisplayTitle" style="margin: 0; font-size: 1.15rem; color: var(--accent);">Judul Lagu</h3>
+              <span id="lyricsDisplayArtist" style="font-size: 0.88rem; color: var(--text-muted);">Nama Artis</span>
+            </div>
+            <button id="btnCopyLyrics" class="btn-solid" type="button" style="padding: 6px 12px; font-size: 0.85rem;">📋 Salin Lirik</button>
+          </div>
+          <pre id="lyricsContentText" style="white-space: pre-wrap; font-family: inherit; font-size: 0.95rem; line-height: 1.7; color: var(--text-color); max-height: 380px; overflow-y: auto; margin: 0;"></pre>
+        </div>
+        <div id="lyricsPlaceholder" style="background: var(--surface-alt); padding: 30px; text-align: center; color: var(--text-muted); border-radius: var(--radius-md); border: 1px solid var(--line);">
+          Ketik nama artis dan judul lagu untuk mencari lirik lagu lengkap.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
